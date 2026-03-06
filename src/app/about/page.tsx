@@ -39,20 +39,68 @@ export default function About() {
       </section>
 
       <section>
-        <div className="brutal-card" style={{ backgroundColor: 'var(--accent)', color: 'white' }}>
-          <h2 style={{ fontSize: '3rem', marginBottom: '30px' }}>Quick Facts ⚡</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-            <div style={{ border: '4px solid white', padding: '20px', fontWeight: 900 }}>
-              NATIVE <br />RUSSIAN
+        <div className="brutal-card" style={{ 
+          backgroundColor: 'var(--black)', 
+          color: 'white', 
+          marginBottom: '40px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '20px'
+        }}>
+          <svg width="50" height="50" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M60 10L20 60H50L40 90L80 40H50L60 10Z" fill="var(--primary)" stroke="white" strokeWidth="6" strokeLinejoin="round"/>
+          </svg>
+          <h2 style={{ fontSize: '3.5rem', textTransform: 'uppercase' }}>Quick Facts</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '30px' }}>
+          {/* NATIVE RUSSIAN */}
+          <div className="brutal-card" style={{ backgroundColor: 'var(--primary)', transform: 'rotate(-2deg)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+            <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="20" width="80" height="20" fill="white" stroke="black" strokeWidth="6"/>
+              <rect x="10" y="40" width="80" height="20" fill="#0052FF" stroke="black" strokeWidth="6"/>
+              <rect x="10" y="60" width="80" height="20" fill="#FF3B30" stroke="black" strokeWidth="6"/>
+            </svg>
+            <div style={{ lineHeight: '1.1' }}>
+              <span style={{ fontSize: '1rem', fontWeight: 900 }}>NATIVE</span> <br />
+              <span style={{ fontSize: '1.8rem', fontWeight: 900 }}>RUSSIAN</span>
             </div>
-            <div style={{ border: '4px solid white', padding: '20px', fontWeight: 900 }}>
-              FLUENT IN <br />4 LANGUAGES
+          </div>
+
+          {/* FLUENT IN 4 LANGUAGES */}
+          <div className="brutal-card" style={{ backgroundColor: 'var(--secondary)', color: 'white', transform: 'rotate(1deg)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+            <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="35" cy="40" r="25" fill="white" stroke="black" strokeWidth="6"/>
+              <circle cx="65" cy="60" r="25" fill="var(--primary)" stroke="black" strokeWidth="6"/>
+              <path d="M30 40H40M35 35V45" stroke="black" strokeWidth="4" strokeLinecap="round"/>
+            </svg>
+            <div style={{ lineHeight: '1.1' }}>
+              <span style={{ fontSize: '1rem', fontWeight: 900 }}>FLUENT IN</span> <br />
+              <span style={{ fontSize: '1.8rem', fontWeight: 900 }}>4 LANGUAGES</span>
             </div>
-            <div style={{ border: '4px solid white', padding: '20px', fontWeight: 900 }}>
-              UNIVERSITY <br />QUALIFIED
+          </div>
+
+          {/* UNIVERSITY QUALIFIED */}
+          <div className="brutal-card" style={{ backgroundColor: 'var(--green)', transform: 'rotate(-1deg)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+            <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 40L50 20L90 40L50 60L10 40Z" fill="white" stroke="black" strokeWidth="6"/>
+              <path d="M30 50V75C30 75 40 85 50 85C60 85 70 75 70 75V50" fill="white" stroke="black" strokeWidth="6"/>
+              <rect x="85" y="40" width="10" height="30" fill="black" />
+            </svg>
+            <div style={{ lineHeight: '1.1' }}>
+              <span style={{ fontSize: '1rem', fontWeight: 900 }}>UNIVERSITY</span> <br />
+              <span style={{ fontSize: '1.8rem', fontWeight: 900 }}>QUALIFIED</span>
             </div>
-            <div style={{ border: '4px solid white', padding: '20px', fontWeight: 900 }}>
-              BEGINNER <br />TECHNO DJ
+          </div>
+
+          {/* PRACTICAL APPROACH */}
+          <div className="brutal-card" style={{ backgroundColor: 'var(--accent)', color: 'white', transform: 'rotate(2deg)', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+            <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 80L80 20M30 20L20 30M80 70L70 80" stroke="white" strokeWidth="10" strokeLinecap="round"/>
+              <circle cx="80" cy="20" r="10" fill="var(--primary)" stroke="black" strokeWidth="4"/>
+            </svg>
+            <div style={{ lineHeight: '1.1' }}>
+              <span style={{ fontSize: '1rem', fontWeight: 900 }}>PRACTICAL</span> <br />
+              <span style={{ fontSize: '1.8rem', fontWeight: 900 }}>APPROACH</span>
             </div>
           </div>
         </div>
