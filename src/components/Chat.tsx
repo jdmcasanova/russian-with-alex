@@ -12,7 +12,6 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
 
   useEffect(() => {
     const fetchMessages = async () => {
-      // Fetch any message where the student is either the sender or the receiver
       const { data } = await supabase
         .from('messages')
         .select(`
@@ -28,19 +27,35 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
 
     fetchMessages();
 
+    // SUBSCRIBE TO REALTIME UPDATES
     const channel = supabase
-      .channel(`chat:${studentId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
+      .channel(`chat_${studentId}`)
+      .on('postgres_changes', { 
+        event: 'INSERT', 
+        schema: 'public', 
+        table: 'messages' 
+      }, async (payload) => {
         const msg = payload.new;
-        // If the new message involves this student, add it to the list
+        
+        // Only add if it involves this student thread
         if (msg.sender_id === studentId || msg.receiver_id === studentId) {
+          // Avoid duplicate messages if we already added it optimistically
+          setMessages((prev) => {
+            const exists = prev.some(m => m.id === msg.id);
+            if (exists) return prev;
+            return [...prev, msg];
+          });
+
+          // Fetch sender info for the bubble label
           const { data: senderInfo } = await supabase
             .from('profiles')
             .select('first_name, last_name, role')
             .eq('id', msg.sender_id)
             .single();
           
-          setMessages((prev) => [...prev, { ...msg, sender: senderInfo }]);
+          setMessages((prev) => 
+            prev.map(m => m.id === msg.id ? { ...m, sender: senderInfo } : m)
+          );
         }
       })
       .subscribe();
@@ -60,14 +75,22 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
     e.preventDefault();
     if (!newMessage.trim()) return;
 
-    const tempMessage = newMessage;
+    const content = newMessage;
     setNewMessage('');
 
-    // If I am the student, the receiver is the admin (we'll fetch an admin ID)
-    // If I am the admin, the receiver is the student
+    // OPTIMISTIC UPDATE: Add the message to the UI immediately
+    const optimisticId = Math.random();
+    const optimisticMsg = {
+      id: optimisticId,
+      content,
+      sender_id: userId,
+      created_at: new Date().toISOString(),
+      sender: { first_name: 'You', last_name: '', role: '' } // Temporary label
+    };
+    setMessages((prev) => [...prev, optimisticMsg]);
+
+    // DETERMINE RECEIVER
     let receiverId = studentId; 
-    
-    // If the logged in user is the student, we need to find an admin to send to
     if (userId === studentId) {
       const { data: admin } = await supabase
         .from('profiles')
@@ -78,15 +101,20 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
       if (admin) receiverId = admin.id;
     }
 
-    const { error } = await supabase.from('messages').insert({
-      content: tempMessage,
+    // SEND TO DB
+    const { data, error } = await supabase.from('messages').insert({
+      content,
       sender_id: userId,
       receiver_id: receiverId
-    });
+    }).select().single();
 
     if (error) {
       console.error(error);
-      setNewMessage(tempMessage);
+      // Remove optimistic message on error
+      setMessages((prev) => prev.filter(m => m.id !== optimisticId));
+    } else if (data) {
+      // Replace optimistic message with real DB message
+      setMessages((prev) => prev.map(m => m.id === optimisticId ? data : m));
     }
   };
 
