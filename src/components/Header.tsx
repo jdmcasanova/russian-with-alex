@@ -42,17 +42,29 @@ export default function Header({ user }: { user: User | null }) {
         </Link>
 
         {/* DESKTOP NAV */}
-        <div className="desktop-nav" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div className="desktop-nav" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <Link href="/" className="nav-link">Home</Link>
           <Link href="/about" className="nav-link">About</Link>
           <Link href="/contact" className="nav-link">Contact</Link>
           
           {user ? (
-            <Link href="/dashboard" className="brutal-btn" style={{ padding: '8px 15px', fontSize: '0.8rem', backgroundColor: 'var(--green)', color: 'black' }}>
+            <Link href="/dashboard" className="brutal-btn" style={{ 
+              padding: '8px 15px', 
+              fontSize: '0.8rem', 
+              backgroundColor: 'var(--green)', 
+              color: 'black',
+              boxShadow: '4px 4px 0px black'
+            }}>
               Dashboard
             </Link>
           ) : (
-            <Link href="/login" className="brutal-btn" style={{ padding: '8px 15px', fontSize: '0.8rem', backgroundColor: 'var(--secondary)', color: 'white' }}>
+            <Link href="/login" className="brutal-btn" style={{ 
+              padding: '8px 15px', 
+              fontSize: '0.8rem', 
+              backgroundColor: 'var(--secondary)', 
+              color: 'white',
+              boxShadow: '4px 4px 0px black'
+            }}>
               Sign In
             </Link>
           )}
