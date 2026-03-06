@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import styles from '../page.module.css';
 import { revalidatePath } from 'next/cache';
+import Link from 'next/link';
 import Chat from '@/components/Chat';
 
 export default async function Admin({ searchParams }: { searchParams: Promise<{ student?: string }> }) {
