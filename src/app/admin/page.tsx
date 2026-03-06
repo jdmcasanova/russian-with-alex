@@ -258,7 +258,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                   borderBottom: '2px solid black',
                   backgroundColor: selectedStudentId === s.id ? 'var(--light-yellow)' : 'transparent',
                   fontWeight: 800,
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  textDecoration: 'none', // Removed the weird underline
+                  color: 'black',
+                  transition: 'background-color 0.2s'
                 }}>
                   {s.first_name} {s.last_name}
                 </Link>
