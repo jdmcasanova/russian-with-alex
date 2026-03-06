@@ -10,10 +10,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const params = await searchParams;
   const selectedStudentId = params.student;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return redirect('/login');
 
   const { data: profile } = await supabase
@@ -27,7 +24,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const { data: students } = await supabase
     .from('profiles')
     .select('*')
-    .neq('role', 'admin');
+    .neq('role', 'admin')
+    .order('first_name', { ascending: true });
+
+  const selectedStudent = students?.find(s => s.id === selectedStudentId);
 
   async function updateHours(formData: FormData) {
     'use server';
@@ -44,54 +44,99 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   }
 
   return (
-    <main className={styles.container}>
-      <header style={{ padding: '40px 20px', borderBottom: '4px solid black', marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '3.5rem' }}>ADMIN PORTAL</h1>
-      </header>
-
-      <div className={styles.splitSection}>
-        {/* STUDENT LIST */}
-        <div className="brutal-card">
-          <h2 style={{ fontSize: '2rem', marginBottom: '30px' }}>STUDENTS</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <main className={styles.container} style={{ height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', borderTop: '4px solid black' }}>
+        
+        {/* LEFT SIDE: STUDENT LIST (WhatsApp Style) */}
+        <div style={{ 
+          width: '350px', 
+          borderRight: '4px solid black', 
+          display: 'flex', 
+          flexDirection: 'column',
+          backgroundColor: 'white'
+        }}>
+          <div style={{ padding: '20px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 900 }}>STUDENTS</h2>
+          </div>
+          
+          <div style={{ flex: 1, overflowY: 'auto' }}>
             {students?.map((s) => (
-              <div key={s.id} style={{ 
-                border: '4px solid black', 
-                padding: '15px', 
-                backgroundColor: selectedStudentId === s.id ? 'var(--primary)' : 'white',
-                boxShadow: selectedStudentId === s.id ? 'none' : '4px 4px 0px black'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontWeight: 900 }}>{s.first_name} {s.last_name}</span>
-                    <span style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.7 }}>{s.email}</span>
-                  </div>
-                  <Link href={`/admin?student=${s.id}`} style={{ textDecoration: 'underline', fontWeight: 900 }}>CHAT 💬</Link>
+              <Link 
+                key={s.id} 
+                href={`/admin?student=${s.id}`}
+                style={{ 
+                  display: 'block',
+                  padding: '20px',
+                  borderBottom: '2px solid black',
+                  backgroundColor: selectedStudentId === s.id ? 'var(--light-yellow)' : 'transparent',
+                  transition: 'background-color 0.2s'
+                }}
+              >
+                <div style={{ fontWeight: 900, fontSize: '1.1rem', textTransform: 'uppercase' }}>
+                  {s.first_name} {s.last_name}
                 </div>
-
-                <form action={updateHours} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input type="hidden" name="id" value={s.id} />
-                  <input 
-                    type="number" 
-                    name="hours" 
-                    defaultValue={s.hours_remaining} 
-                    style={{ width: '50px', padding: '5px', border: '3px solid black', fontWeight: 900 }}
-                  />
-                  <button type="submit" style={{ background: 'black', color: 'white', padding: '5px 10px', fontWeight: 900 }}>SET</button>
-                </form>
-              </div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.6, marginTop: '4px' }}>
+                  {s.email}
+                </div>
+                <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ 
+                    fontSize: '0.7rem', 
+                    backgroundColor: 'black', 
+                    color: 'white', 
+                    padding: '2px 8px',
+                    fontWeight: 900
+                  }}>
+                    {s.hours_remaining} HOURS LEFT
+                  </span>
+                </div>
+              </Link>
             ))}
+            {students?.length === 0 && <p style={{ padding: '20px', fontWeight: 700 }}>No students yet.</p>}
           </div>
         </div>
 
-        {/* CHAT AREA */}
-        <div className="brutal-card" style={{ backgroundColor: 'var(--bg)' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '30px' }}>MESSAGES</h2>
-          {selectedStudentId ? (
-            <Chat userId={user.id} receiverId={selectedStudentId} />
+        {/* RIGHT SIDE: CHAT & ACTIONS */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)' }}>
+          {selectedStudent ? (
+            <div style={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+              
+              {/* TOP BAR: QUICK ACTIONS */}
+              <div style={{ padding: '15px 30px', borderBottom: '4px solid black', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h2 style={{ fontSize: '1.2rem', fontWeight: 900 }}>{selectedStudent.first_name} {selectedStudent.last_name}</h2>
+                </div>
+                
+                <form action={updateHours} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input type="hidden" name="id" value={selectedStudent.id} />
+                  <label style={{ fontWeight: 900, fontSize: '0.8rem' }}>MANAGE HOURS:</label>
+                  <input 
+                    type="number" 
+                    name="hours" 
+                    defaultValue={selectedStudent.hours_remaining} 
+                    style={{ width: '60px', padding: '8px', border: '3px solid black', fontWeight: 900 }}
+                  />
+                  <button type="submit" className="brutal-btn" style={{ padding: '5px 15px', fontSize: '0.7rem', backgroundColor: 'var(--green)' }}>
+                    UPDATE
+                  </button>
+                </form>
+              </div>
+
+              {/* CHAT COMPONENT */}
+              <div style={{ flex: 1, padding: '20px' }}>
+                <Chat 
+                  userId={user.id} 
+                  receiverId={selectedStudent.id} 
+                  receiverName={`${selectedStudent.first_name}`} 
+                />
+              </div>
+            </div>
           ) : (
-            <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, border: '4px solid black', backgroundColor: 'white' }}>
-              SELECT A STUDENT TO START CHATTING
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '20px' }}>
+              <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="20" width="80" height="60" fill="white" stroke="black" strokeWidth="6"/>
+                <path d="M30 45H70M30 55H60" stroke="black" strokeWidth="4" strokeLinecap="round"/>
+              </svg>
+              <h2 style={{ fontWeight: 900, textTransform: 'uppercase' }}>Select a student to start chatting</h2>
             </div>
           )}
         </div>
