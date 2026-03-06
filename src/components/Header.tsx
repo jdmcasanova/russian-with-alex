@@ -13,6 +13,36 @@ export default function Header({ user }: { user: User | null }) {
     else document.body.style.overflow = 'unset';
   };
 
+  const navLinkStyle = {
+    padding: '8px 16px',
+    border: '3px solid black',
+    boxShadow: '3px 3px 0px black',
+    backgroundColor: 'white',
+    textDecoration: 'none',
+    color: 'black',
+    fontWeight: 800,
+    fontSize: '0.8rem',
+    textTransform: 'uppercase' as const,
+    borderRadius: '0px',
+    display: 'inline-block'
+  };
+
+  const mobileLinkStyle = {
+    width: '100%',
+    maxWidth: '300px',
+    textAlign: 'center' as const,
+    padding: '20px',
+    border: '4px solid black',
+    boxShadow: '8px 8px 0px black',
+    backgroundColor: 'white',
+    textDecoration: 'none',
+    color: 'black',
+    fontWeight: 900,
+    fontSize: '1.5rem',
+    textTransform: 'uppercase' as const,
+    borderRadius: '0px'
+  };
+
   return (
     <>
       <nav style={{
@@ -40,11 +70,11 @@ export default function Header({ user }: { user: User | null }) {
           </span>
         </Link>
 
-        {/* DESKTOP NAV - PERFECTLY SQUARED */}
+        {/* DESKTOP NAV */}
         <div className="desktop-nav" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <Link href="/" className="nav-link-sq">Home</Link>
-          <Link href="/about" className="nav-link-sq">About</Link>
-          <Link href="/contact" className="nav-link-sq">Contact</Link>
+          <Link href="/" style={navLinkStyle}>Home</Link>
+          <Link href="/about" style={navLinkStyle}>About</Link>
+          <Link href="/contact" style={navLinkStyle}>Contact</Link>
           
           {user ? (
             <Link href="/dashboard" className="brutal-btn" style={{ 
@@ -53,7 +83,8 @@ export default function Header({ user }: { user: User | null }) {
               backgroundColor: 'var(--green)', 
               color: 'black',
               boxShadow: '4px 4px 0px black',
-              borderRadius: '0px' // FIXED: Perfectly square
+              borderRadius: '0px',
+              textDecoration: 'none'
             }}>
               Dashboard
             </Link>
@@ -64,7 +95,8 @@ export default function Header({ user }: { user: User | null }) {
               backgroundColor: 'var(--secondary)', 
               color: 'white',
               boxShadow: '4px 4px 0px black',
-              borderRadius: '0px' // FIXED: Perfectly square
+              borderRadius: '0px',
+              textDecoration: 'none'
             }}>
               Sign In
             </Link>
@@ -91,58 +123,32 @@ export default function Header({ user }: { user: User | null }) {
           display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '20px', padding: '40px'
         }}>
           <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '20px', borderBottom: '8px solid black' }}>MENU</h2>
-          <Link href="/" onClick={toggleMenu} className="mobile-link">HOME</Link>
-          <Link href="/about" onClick={toggleMenu} className="mobile-link">ABOUT</Link>
-          <Link href="/contact" onClick={toggleMenu} className="mobile-link">CONTACT</Link>
+          <Link href="/" onClick={toggleMenu} style={mobileLinkStyle}>HOME</Link>
+          <Link href="/about" onClick={toggleMenu} style={mobileLinkStyle}>ABOUT</Link>
+          <Link href="/contact" onClick={toggleMenu} style={mobileLinkStyle}>CONTACT</Link>
           <div style={{ width: '100%', height: '4px', backgroundColor: 'black', margin: '20px 0' }}></div>
           {user ? (
             <>
-              <Link href="/dashboard" onClick={toggleMenu} className="mobile-link" style={{ backgroundColor: 'var(--green)' }}>DASHBOARD</Link>
+              <Link href="/dashboard" onClick={toggleMenu} style={{ ...mobileLinkStyle, backgroundColor: 'var(--green)' }}>DASHBOARD</Link>
               <form action="/auth/signout" method="post" style={{ width: '100%', maxWidth: '300px' }}>
-                <button type="submit" className="mobile-link" style={{ backgroundColor: 'var(--accent)', color: 'white', width: '100%', cursor: 'pointer', borderRadius: '0px' }}>
+                <button type="submit" style={{ ...mobileLinkStyle, backgroundColor: 'var(--accent)', color: 'white', cursor: 'pointer' }}>
                   LOGOUT
                 </button>
               </form>
             </>
           ) : (
-            <Link href="/login" onClick={toggleMenu} className="mobile-link" style={{ backgroundColor: 'var(--secondary)', color: 'white' }}>SIGN IN</Link>
+            <Link href="/login" onClick={toggleMenu} style={{ ...mobileLinkStyle, backgroundColor: 'var(--secondary)', color: 'white' }}>SIGN IN</Link>
           )}
         </div>
       )}
 
-      <style jsx>{`
-        .nav-link-sq {
-          padding: 8px 16px;
-          border: 3px solid black;
-          box-shadow: 3px 3px 0px black;
-          background-color: white;
-          text-decoration: none;
-          color: black;
-          font-weight: 800;
-          font-size: 0.8rem;
-          text-transform: uppercase;
-          border-radius: 0px; /* FIXED: Perfectly square */
-        }
-        .mobile-link {
-          width: 100%;
-          max-width: 300px;
-          text-align: center;
-          padding: 20px;
-          border: 4px solid black;
-          box-shadow: 8px 8px 0px black;
-          background-color: white;
-          text-decoration: none;
-          color: black;
-          font-weight: 900;
-          font-size: 1.5rem;
-          text-transform: uppercase;
-          border-radius: 0px; /* Mobile stays bold too */
-        }
+      {/* GLOBAL CSS FOR MEDIA QUERIES */}
+      <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 850px) {
           .desktop-nav { display: none !important; }
           .mobile-nav-toggle { display: flex !important; }
         }
-      `}</style>
+      `}} />
     </>
   );
 }
