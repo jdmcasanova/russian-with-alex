@@ -47,181 +47,95 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <main className={styles.container} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)' }}>
-      {/* PLAYFUL HEADER */}
+      {/* HEADER */}
       <div style={{ 
-        padding: '25px 40px', 
-        backgroundColor: 'var(--secondary)', 
+        padding: '15px 20px', 
+        backgroundColor: 'var(--black)', 
         color: 'white', 
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center',
         borderBottom: '6px solid black',
-        transform: 'rotate(-0.5deg)',
-        margin: '10px 10px 0 10px',
-        borderRadius: '20px'
+        flexWrap: 'wrap',
+        gap: '10px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <div style={{ 
-            padding: '10px', 
-            backgroundColor: 'var(--primary)', 
-            borderRadius: '50%', 
-            border: '4px solid black',
-            transform: 'rotate(10deg)'
-          }}>
-            <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ padding: '6px', backgroundColor: 'var(--primary)', borderRadius: '50%', border: '3px solid black' }}>
+            <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="50" cy="40" r="20" fill="black" />
               <path d="M20 90C20 70 35 60 50 60C65 60 80 70 80 90H20Z" fill="black" />
             </svg>
           </div>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '-1px' }}>
-            ALEX&apos;S HQ
-          </h1>
+          <h1 style={{ fontSize: '1.1rem', fontWeight: 900, textTransform: 'uppercase' }}>ALEX&apos;S HQ</h1>
         </div>
-        <div style={{ 
-          fontWeight: 900, 
-          fontSize: '0.9rem', 
-          backgroundColor: 'black', 
-          padding: '8px 15px', 
-          borderRadius: '10px',
-          transform: 'rotate(2deg)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <span>HI, {profile.first_name.toUpperCase()}!</span>
-          <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 50C20 30 30 20 50 20C70 20 80 30 80 50V80H20V50Z" fill="var(--primary)" stroke="white" strokeWidth="8"/>
-            <circle cx="40" cy="45" r="5" fill="black" />
-            <circle cx="60" cy="45" r="5" fill="black" />
-          </svg>
+        <div style={{ fontWeight: 900, fontSize: '0.75rem', backgroundColor: 'black', padding: '5px 12px', borderRadius: '8px', border: '1px solid white' }}>
+          HI, {profile.first_name.toUpperCase()}!
         </div>
       </div>
 
-      {/* WONKY TAB NAVIGATION */}
-      <div style={{ display: 'flex', gap: '20px', padding: '30px 40px' }}>
+      {/* TABS */}
+      <div style={{ display: 'flex', gap: '10px', padding: '15px 20px', flexWrap: 'wrap' }}>
         <Link href="/admin?tab=overview" style={{
-          padding: '12px 30px',
+          padding: '8px 20px',
           backgroundColor: activeTab === 'overview' ? 'var(--primary)' : 'white',
-          border: '4px solid black',
-          borderRadius: '15px',
+          border: '3px solid black',
+          borderRadius: '12px',
           fontWeight: 900,
-          fontSize: '1.1rem',
-          boxShadow: activeTab === 'overview' ? 'none' : '6px 6px 0px black',
-          transform: activeTab === 'overview' ? 'translate(3px, 3px)' : 'rotate(-2deg)',
-          transition: 'all 0.1s',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="10" y="10" width="35" height="35" fill="black" stroke="black" strokeWidth="4"/>
-            <rect x="55" y="10" width="35" height="35" fill="white" stroke="black" strokeWidth="8"/>
-            <rect x="10" y="55" width="35" height="35" fill="white" stroke="black" strokeWidth="8"/>
-            <rect x="55" y="55" width="35" height="35" fill="black" stroke="black" strokeWidth="4"/>
-          </svg>
-          STUDENTS
-        </Link>
-        
+          fontSize: '0.9rem',
+          textDecoration: 'none',
+          color: 'black'
+        }}>STUDENTS</Link>
         <Link href="/admin?tab=chat" style={{
-          padding: '12px 30px',
-          backgroundColor: activeTab === 'chat' ? '#FF6B6B' : 'white', 
+          padding: '8px 20px',
+          backgroundColor: activeTab === 'chat' ? '#FF6B6B' : 'white',
           color: activeTab === 'chat' ? 'white' : 'black',
-          border: '4px solid black',
-          borderRadius: '15px',
+          border: '3px solid black',
+          borderRadius: '12px',
           fontWeight: 900,
-          fontSize: '1.1rem',
-          boxShadow: activeTab === 'chat' ? 'none' : '6px 6px 0px black',
-          transform: activeTab === 'chat' ? 'translate(3px, 3px)' : 'rotate(2deg)',
-          transition: 'all 0.1s',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 20H90V70H50L25 90V70H10V20Z" fill={activeTab === 'chat' ? 'white' : 'black'} stroke="black" strokeWidth="4"/>
-          </svg>
-          CHAT
-        </Link>
+          fontSize: '0.9rem',
+          textDecoration: 'none'
+        }}>CHAT</Link>
       </div>
 
-      <div style={{ flex: 1, padding: '0 40px 40px 40px' }}>
+      <div style={{ flex: 1, padding: '0 20px 20px 20px' }}>
         
-        {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '35px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
             {students?.map((s, idx) => (
               <div key={s.id} className="brutal-card" style={{ 
                 backgroundColor: 'white', 
-                borderRadius: '25px', 
-                padding: '30px',
+                borderRadius: '20px', 
+                padding: '20px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '20px',
-                transform: `rotate(${idx % 2 === 0 ? '1' : '-1'}deg)`
+                gap: '15px',
+                transform: `rotate(${idx % 2 === 0 ? '0.5' : '-0.5'}deg)`
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'var(--primary)', border: '3px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="25" height="25" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="40" r="20" fill="black" />
-                        <path d="M20 90C20 70 35 60 50 60C65 60 80 70 80 90H20Z" fill="black" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h3 style={{ fontSize: '1.4rem', lineHeight: '1', textTransform: 'uppercase' }}>{s.first_name} {s.last_name}</h3>
-                      <p style={{ fontSize: '0.75rem', fontWeight: 700, opacity: 0.5, marginTop: '2px' }}>{s.email}</p>
-                    </div>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--primary)', border: '2px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="50" cy="40" r="20" fill="black" />
+                      <path d="M20 90C20 70 35 60 50 60C65 60 80 70 80 90H20Z" fill="black" />
+                    </svg>
+                  </div>
+                  <div style={{ overflow: 'hidden' }}>
+                    <h3 style={{ fontSize: '1.1rem', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.first_name} {s.last_name}</h3>
+                    <p style={{ fontSize: '0.7rem', fontWeight: 700, opacity: 0.5 }}>{s.email}</p>
                   </div>
                 </div>
                 
-                <div style={{ 
-                  backgroundColor: 'var(--light-yellow)', 
-                  padding: '20px', 
-                  borderRadius: '20px', 
-                  border: '4px solid black',
-                  textAlign: 'center'
-                }}>
-                  <p style={{ fontWeight: 900, fontSize: '0.8rem', marginBottom: '5px', opacity: 0.7 }}>HOURS REMAINING</p>
-                  <span style={{ fontSize: '3.5rem', fontWeight: 900, color: s.hours_remaining === 0 ? 'var(--accent)' : 'black' }}>
-                    {s.hours_remaining}
-                  </span>
+                <div style={{ backgroundColor: 'var(--light-yellow)', padding: '12px', borderRadius: '15px', border: '3px solid black', textAlign: 'center' }}>
+                  <p style={{ fontWeight: 900, fontSize: '0.7rem', opacity: 0.7 }}>HOURS</p>
+                  <span style={{ fontSize: '2.5rem', fontWeight: 900 }}>{s.hours_remaining}</span>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <Link href={`/admin?tab=chat&student=${s.id}`} className="brutal-btn" style={{ 
-                    flex: 1, 
-                    fontSize: '0.9rem', 
-                    padding: '12px', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                    backgroundColor: 'var(--secondary)',
-                    color: 'white',
-                    borderRadius: '12px'
-                  }}>
-                    <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10 20H90V70H50L25 90V70H10V20Z" fill="white" stroke="white" strokeWidth="4"/>
-                    </svg>
-                    REPLY
-                  </Link>
-                  <form action={updateHours} style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <Link href={`/admin?tab=chat&student=${s.id}`} className="brutal-btn" style={{ flex: 1, fontSize: '0.8rem', padding: '10px', textAlign: 'center', backgroundColor: 'var(--secondary)', color: 'white', borderRadius: '10px', textDecoration: 'none' }}>REPLY</Link>
+                  <form action={updateHours} style={{ display: 'flex', gap: '5px' }}>
                     <input type="hidden" name="id" value={s.id} />
-                    <input 
-                      type="number" 
-                      name="hours" 
-                      defaultValue={s.hours_remaining} 
-                      style={{ width: '60px', padding: '10px', border: '3px solid black', borderRadius: '12px', fontWeight: 900, fontSize: '1rem' }}
-                    />
-                    <button type="submit" className="brutal-btn" style={{ 
-                      backgroundColor: 'var(--green)', 
-                      borderRadius: '12px', 
-                      padding: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <input type="number" name="hours" defaultValue={s.hours_remaining} style={{ width: '45px', padding: '8px', border: '3px solid black', borderRadius: '10px', fontWeight: 900, fontSize: '0.9rem' }} />
+                    <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', borderRadius: '10px', padding: '8px' }}>
+                      <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20 50L40 70L80 30" stroke="black" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     </button>
@@ -232,36 +146,36 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           </div>
         )}
 
-        {/* TAB 2: MESSAGES */}
         {activeTab === 'chat' && (
           <div style={{ 
             display: 'flex', 
-            height: '75vh', 
+            flexDirection: 'row',
+            height: 'calc(100vh - 200px)', 
             backgroundColor: 'white', 
             border: '4px solid black', 
-            borderRadius: '30px',
-            overflow: 'hidden',
-            boxShadow: '15px 15px 0px black'
-          }}>
-            <div style={{ width: '320px', borderRight: '4px solid black', overflowY: 'auto', backgroundColor: '#fdfdfd' }}>
-              <div style={{ padding: '20px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 20H80V80H20V20Z" fill="black"/>
-                  <path d="M30 40H70M30 60H60" stroke="white" strokeWidth="8"/>
-                </svg>
-                STUDENT LIST
-              </div>
+            borderRadius: '20px',
+            overflow: 'hidden'
+          }} className="admin-chat-container">
+            {/* CSS for responsive chat - will inject via globals or inline style tag */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media (max-width: 768px) {
+                .admin-chat-container { flex-direction: column !important; height: auto !important; min-height: 600px; }
+                .admin-student-list { width: 100% !important; height: 150px !important; border-right: none !important; border-bottom: 4px solid black !important; }
+              }
+            `}} />
+            
+            <div style={{ width: '250px', borderRight: '4px solid black', overflowY: 'auto', backgroundColor: '#fdfdfd', flexShrink: 0 }} className="admin-student-list">
+              <div style={{ padding: '12px 15px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)', fontWeight: 900, fontSize: '0.8rem' }}>STUDENTS</div>
               {students?.map((s) => (
                 <Link key={s.id} href={`/admin?tab=chat&student=${s.id}`} style={{
                   display: 'block',
-                  padding: '20px',
+                  padding: '12px 15px',
                   borderBottom: '2px solid black',
                   backgroundColor: selectedStudentId === s.id ? 'var(--light-yellow)' : 'transparent',
                   fontWeight: 800,
-                  fontSize: '1rem',
-                  textDecoration: 'none', // Removed the weird underline
-                  color: 'black',
-                  transition: 'background-color 0.2s'
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  color: 'black'
                 }}>
                   {s.first_name} {s.last_name}
                 </Link>
@@ -270,17 +184,12 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--bg)', overflow: 'hidden' }}>
               {selectedStudent ? (
-                <div style={{ flex: 1, padding: '20px', overflow: 'hidden' }}>
+                <div style={{ flex: 1, padding: '10px', overflow: 'hidden' }}>
                   <Chat userId={user.id} studentId={selectedStudent.id} receiverName={selectedStudent.first_name} />
                 </div>
               ) : (
-                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, flexDirection: 'column', gap: '20px' }}>
-                  <div style={{ width: '80px', height: '80px', backgroundColor: 'var(--primary)', borderRadius: '50%', border: '4px solid black', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10 20H90V70H50L25 90V70H10V20Z" fill="black" stroke="black" strokeWidth="4"/>
-                    </svg>
-                  </div>
-                  <h2 style={{ textTransform: 'uppercase' }}>Pick a student to chat!</h2>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, padding: '20px', textAlign: 'center' }}>
+                  SELECT A STUDENT TO CHAT
                 </div>
               )}
             </div>
