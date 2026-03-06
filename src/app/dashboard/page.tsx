@@ -16,43 +16,42 @@ export default async function Dashboard() {
     .eq('id', user.id)
     .single();
 
-  // If user is admin, redirect them to the admin panel instead
   if (profile?.role === 'admin') {
     return redirect('/admin');
   }
 
-  const { data: admin } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('role', 'admin')
-    .limit(1)
-    .single();
-
   return (
     <main className={styles.container}>
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
-        <header style={{ marginBottom: '25px' }}>
-          <h1 style={{ fontSize: '2.5rem', textTransform: 'uppercase' }}>STUDENT PORTAL</h1>
-          <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>Welcome back, {profile?.first_name}! 👋</p>
+      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+        <header style={{ marginBottom: '25px', textAlign: 'center' }}>
+          <h1 style={{ fontSize: 'clamp(2rem, 8vw, 3rem)', textTransform: 'uppercase', lineHeight: 1 }}>STUDENT PORTAL</h1>
+          <p style={{ fontSize: '1.1rem', fontWeight: 700, marginTop: '10px' }}>Welcome back, {profile?.first_name}! 👋</p>
         </header>
 
-        {/* COMPACT STATS GRID */}
+        {/* RESPONSIVE STATS GRID */}
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gridTemplateColumns: '1fr', // Stack by default on mobile
           gap: '20px',
           marginBottom: '40px'
-        }}>
-          <div className="brutal-card" style={{ backgroundColor: 'var(--primary)', transform: 'rotate(-1deg)', padding: '20px' }}>
-            <h2 style={{ fontSize: '1rem', fontWeight: 900, marginBottom: '5px' }}>LESSONS LEFT</h2>
-            <div style={{ fontSize: '3rem', fontWeight: 900, lineHeight: 1 }}>
+        }} className="dashboard-grid">
+          
+          <style dangerouslySetInnerHTML={{ __html: `
+            @media (min-width: 600px) {
+              .dashboard-grid { grid-template-columns: 1fr 1fr !important; }
+            }
+          `}} />
+
+          <div className="brutal-card" style={{ backgroundColor: 'var(--primary)', transform: 'rotate(-1deg)', padding: '20px', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '0.9rem', fontWeight: 900, marginBottom: '5px' }}>LESSONS LEFT</h2>
+            <div style={{ fontSize: '3.5rem', fontWeight: 900, lineHeight: 1 }}>
               {profile?.hours_remaining || 0}
             </div>
           </div>
 
-          <div className="brutal-card" style={{ backgroundColor: 'var(--secondary)', color: 'white', transform: 'rotate(1deg)', padding: '20px' }}>
-            <h2 style={{ fontSize: '1rem', fontWeight: 900, marginBottom: '5px' }}>NEXT STEP</h2>
-            <Link href="https://cal.com/alex-russian" target="_blank" className="brutal-btn" style={{ backgroundColor: 'white', display: 'inline-block', fontSize: '0.9rem', padding: '8px 15px' }}>
+          <div className="brutal-card" style={{ backgroundColor: 'var(--secondary)', color: 'white', transform: 'rotate(1deg)', padding: '20px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <h2 style={{ fontSize: '0.9rem', fontWeight: 900, marginBottom: '10px' }}>NEXT STEP</h2>
+            <Link href="https://cal.com/alex-russian" target="_blank" className="brutal-btn" style={{ backgroundColor: 'white', display: 'inline-block', fontSize: '0.9rem', padding: '10px 20px', width: '100%', textDecoration: 'none', color: 'black' }}>
               BOOK A CLASS 🗓️
             </Link>
           </div>
@@ -66,9 +65,9 @@ export default async function Dashboard() {
           </div>
         </section>
 
-        <footer style={{ marginTop: '80px', padding: '40px 0', borderTop: '4px solid black' }}>
+        <footer style={{ marginTop: '60px', padding: '30px 0', borderTop: '4px solid black', textAlign: 'center' }}>
           <form action="/auth/signout" method="post">
-            <button type="submit" style={{ background: 'none', border: 'none', textDecoration: 'underline', fontWeight: 900, cursor: 'pointer' }}>
+            <button type="submit" style={{ background: 'none', border: 'none', textDecoration: 'underline', fontWeight: 900, cursor: 'pointer', fontSize: '0.9rem' }}>
               LOGOUT
             </button>
           </form>
