@@ -142,7 +142,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
               <div style={{ flex: 1, padding: '20px' }}>
                 <Chat 
                   userId={user.id} 
-                  receiverId={selectedStudent.id} 
+                  studentId={selectedStudent.id} 
                   receiverName={`${selectedStudent.first_name}`} 
                 />
               </div>

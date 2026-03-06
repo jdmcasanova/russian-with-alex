@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
-export default function Chat({ userId, receiverId, receiverName }: { userId: string, receiverId: string, receiverName?: string }) {
+export default function Chat({ userId, studentId, receiverName }: { userId: string, studentId: string, receiverName?: string }) {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -12,13 +12,14 @@ export default function Chat({ userId, receiverId, receiverName }: { userId: str
 
   useEffect(() => {
     const fetchMessages = async () => {
+      // Fetch any message where the student is either the sender or the receiver
       const { data } = await supabase
         .from('messages')
         .select(`
           *,
           sender:sender_id (first_name, last_name, role)
         `)
-        .or(`and(sender_id.eq.${userId},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${userId})`)
+        .or(`sender_id.eq.${studentId},receiver_id.eq.${studentId}`)
         .order('created_at', { ascending: true });
       
       if (data) setMessages(data);
@@ -28,13 +29,11 @@ export default function Chat({ userId, receiverId, receiverName }: { userId: str
     fetchMessages();
 
     const channel = supabase
-      .channel('realtime:messages')
+      .channel(`chat:${studentId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
         const msg = payload.new;
-        if ((msg.sender_id === userId && msg.receiver_id === receiverId) || 
-            (msg.sender_id === receiverId && msg.receiver_id === userId)) {
-          
-          // Fetch sender info for the new message
+        // If the new message involves this student, add it to the list
+        if (msg.sender_id === studentId || msg.receiver_id === studentId) {
           const { data: senderInfo } = await supabase
             .from('profiles')
             .select('first_name, last_name, role')
@@ -49,7 +48,7 @@ export default function Chat({ userId, receiverId, receiverName }: { userId: str
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, receiverId]);
+  }, [studentId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -63,6 +62,21 @@ export default function Chat({ userId, receiverId, receiverName }: { userId: str
 
     const tempMessage = newMessage;
     setNewMessage('');
+
+    // If I am the student, the receiver is the admin (we'll fetch an admin ID)
+    // If I am the admin, the receiver is the student
+    let receiverId = studentId; 
+    
+    // If the logged in user is the student, we need to find an admin to send to
+    if (userId === studentId) {
+      const { data: admin } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('role', 'admin')
+        .limit(1)
+        .single();
+      if (admin) receiverId = admin.id;
+    }
 
     const { error } = await supabase.from('messages').insert({
       content: tempMessage,
@@ -78,12 +92,10 @@ export default function Chat({ userId, receiverId, receiverName }: { userId: str
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'white', border: '4px solid black' }}>
-      {/* CHAT HEADER */}
       <div style={{ padding: '15px 20px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)', fontWeight: 900, textTransform: 'uppercase' }}>
-        Chat with {receiverName || 'Support'}
+        {userId === studentId ? `Chat with Alex` : `Chatting with ${receiverName}`}
       </div>
 
-      {/* MESSAGES AREA */}
       <div 
         ref={scrollRef}
         style={{ 
@@ -129,7 +141,6 @@ export default function Chat({ userId, receiverId, receiverName }: { userId: str
                   border: '3px solid black',
                   boxShadow: '4px 4px 0px black',
                   fontWeight: 600,
-                  position: 'relative'
                 }}>
                   {m.content}
                 </div>
@@ -142,14 +153,13 @@ export default function Chat({ userId, receiverId, receiverName }: { userId: str
         )}
       </div>
 
-      {/* INPUT AREA */}
       <form onSubmit={sendMessage} style={{ padding: '20px', borderTop: '4px solid black', display: 'flex', gap: '15px', backgroundColor: 'white' }}>
         <input 
           type="text" 
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type your message..."
-          style={{ flex: 1, padding: '15px', border: '3px solid black', fontWeight: 700, outline: 'none' }}
+          style={{ flex: 1, padding: '15px', border: '4px solid black', fontWeight: 700, outline: 'none' }}
         />
         <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', padding: '10px 25px' }}>
           SEND

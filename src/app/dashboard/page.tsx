@@ -65,13 +65,7 @@ export default async function Dashboard() {
         <section>
           <h2 style={{ fontSize: '2rem', marginBottom: '20px', textTransform: 'uppercase' }}>Direct Chat with Alex</h2>
           <div style={{ maxWidth: '800px' }}>
-            {admin ? (
-              <Chat userId={user.id} receiverId={admin.id} receiverName="Alex" />
-            ) : (
-              <div className="brutal-card">
-                <p style={{ fontWeight: 700 }}>Chat unavailable. Check back soon!</p>
-              </div>
-            )}
+            <Chat userId={user.id} studentId={user.id} receiverName="Alex" />
           </div>
         </section>
 
