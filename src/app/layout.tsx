@@ -44,6 +44,7 @@ export default async function RootLayout({
           <div style={{ display: 'flex', gap: '15px', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.9rem', alignItems: 'center' }}>
             <Link href="/" style={{ padding: '8px 16px', border: '3px solid black', boxShadow: '3px 3px 0px black', backgroundColor: 'white' }}>Home</Link>
             <Link href="/about" style={{ padding: '8px 16px', border: '3px solid black', boxShadow: '3px 3px 0px black', backgroundColor: 'white' }}>About</Link>
+            <Link href="/contact" style={{ padding: '8px 16px', border: '3px solid black', boxShadow: '3px 3px 0px black', backgroundColor: 'white' }}>Contact</Link>
             
             {user ? (
               <Link href="/dashboard" className="brutal-btn" style={{ padding: '8px 20px', fontSize: '0.9rem', boxShadow: '4px 4px 0px black', backgroundColor: 'var(--green)' }}>
