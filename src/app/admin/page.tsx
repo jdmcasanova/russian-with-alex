@@ -45,6 +45,23 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
   return (
     <main className={styles.container} style={{ height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}>
+      {/* ADMIN TOP BAR */}
+      <div style={{ 
+        padding: '20px 30px', 
+        backgroundColor: 'var(--black)', 
+        color: 'white', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center' 
+      }}>
+        <h1 style={{ fontSize: '1.2rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px' }}>
+          ADMIN COMMAND CENTER ⚡
+        </h1>
+        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>
+          Logged in as: {profile.first_name} (MASTER)
+        </div>
+      </div>
+
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', borderTop: '4px solid black' }}>
         
         {/* LEFT SIDE: STUDENT LIST (WhatsApp Style) */}
