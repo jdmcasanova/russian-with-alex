@@ -3,7 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
-export default function Chat({ studentId, receiverName }: { studentId: string, receiverName?: string }) {
+interface ChatProps {
+  studentId: string;
+  receiverName?: string;
+  onBack?: () => void; // For mobile navigation
+}
+
+export default function Chat({ studentId, receiverName, onBack }: ChatProps) {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -13,11 +19,9 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
 
   useEffect(() => {
     const initChat = async () => {
-      // 1. Get current user ID reliably on client
       const { data: { user } } = await supabase.auth.getUser();
       if (user) setCurrentUserId(user.id);
 
-      // 2. Fetch initial messages
       const { data } = await supabase
         .from('messages')
         .select(`
@@ -33,14 +37,9 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
 
     initChat();
 
-    // 3. Subscribe to realtime
     const channel = supabase
       .channel(`chat_${studentId}`)
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'messages' 
-      }, async (payload) => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
         const msg = payload.new;
         if (msg.sender_id === studentId || msg.receiver_id === studentId) {
           setMessages((prev) => {
@@ -91,12 +90,7 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
 
     let receiverId = studentId; 
     if (currentUserId === studentId) {
-      const { data: admin } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('role', 'admin')
-        .limit(1)
-        .single();
+      const { data: admin } = await supabase.from('profiles').select('id').eq('role', 'admin').limit(1).single();
       if (admin) receiverId = admin.id;
     }
 
@@ -107,7 +101,6 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
     }).select().single();
 
     if (error) {
-      console.error(error);
       setMessages((prev) => prev.filter(m => m.id !== optimisticId));
     } else if (data) {
       setMessages((prev) => prev.map(m => m.id === optimisticId ? data : m));
@@ -118,17 +111,32 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
     <div style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      height: '500px', 
-      maxHeight: '70vh',
+      height: '100%',
+      width: '100%',
       backgroundColor: 'white', 
-      border: '4px solid black',
-      borderRadius: '15px',
-      overflow: 'hidden'
+      position: 'relative'
     }}>
-      <div style={{ padding: '10px 20px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.8rem' }}>
-        {currentUserId === studentId ? `Chat with Alex` : `Chatting with ${receiverName}`}
+      {/* FIXED TOP HEADER */}
+      <div style={{ 
+        padding: '12px 20px', 
+        borderBottom: '4px solid black', 
+        backgroundColor: 'var(--primary)', 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '15px',
+        zIndex: 10
+      }}>
+        {onBack && (
+          <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+        )}
+        <div style={{ fontWeight: 900, textTransform: 'uppercase', fontSize: '1rem' }}>
+          {receiverName}
+        </div>
       </div>
 
+      {/* SCROLLABLE MESSAGES */}
       <div 
         ref={scrollRef}
         style={{ 
@@ -137,30 +145,18 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
           padding: '15px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '10px',
+          gap: '12px',
           backgroundColor: '#fafafa',
         }}
       >
         {loading ? (
           <p style={{ textAlign: 'center', fontWeight: 900, fontSize: '0.8rem' }}>LOADING...</p>
-        ) : messages.length === 0 ? (
-          <p style={{ textAlign: 'center', opacity: 0.5, fontSize: '0.8rem' }}>No messages yet.</p>
         ) : (
           messages.map((m) => {
-            // STRONGER CHECK FOR isMe
+            // BULLETPROOF ALIGNMENT LOGIC
             const isMe = String(m.sender_id) === String(currentUserId);
             
             const dateObj = new Date(m.created_at);
-            const now = new Date();
-            const isToday = dateObj.toDateString() === now.toDateString();
-            const yesterday = new Date();
-            yesterday.setDate(now.getDate() - 1);
-            const isYesterday = dateObj.toDateString() === yesterday.toDateString();
-
-            let dateLabel = dateObj.toLocaleDateString([], { day: 'numeric', month: 'short' });
-            if (isToday) dateLabel = 'Today';
-            if (isYesterday) dateLabel = 'Yesterday';
-
             const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
             return (
@@ -176,23 +172,23 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
               >
                 {!isMe && (
                   <span style={{ fontSize: '0.65rem', fontWeight: 900, marginBottom: '2px', textTransform: 'uppercase' }}>
-                    {m.sender?.first_name} {m.sender?.role === 'admin' ? '(Admin)' : ''}
+                    {m.sender?.first_name}
                   </span>
                 )}
                 <div style={{ 
                   backgroundColor: isMe ? 'var(--secondary)' : 'white',
                   color: isMe ? 'white' : 'black',
-                  padding: '8px 12px',
+                  padding: '10px 14px',
                   border: '3px solid black',
-                  boxShadow: '3px 3px 0px black',
+                  boxShadow: isMe ? '4px 4px 0px black' : '4px 4px 0px rgba(0,0,0,0.1)',
                   fontWeight: 600,
-                  fontSize: '0.9rem',
-                  borderRadius: isMe ? '12px 12px 0 12px' : '12px 12px 12px 0'
+                  fontSize: '0.95rem',
+                  borderRadius: isMe ? '15px 15px 0 15px' : '15px 15px 15px 0'
                 }}>
                   {m.content}
                 </div>
                 <span style={{ fontSize: '0.55rem', fontWeight: 700, marginTop: '4px', opacity: 0.6 }}>
-                  {dateLabel}, {time}
+                  {time}
                 </span>
               </div>
             );
@@ -200,16 +196,23 @@ export default function Chat({ studentId, receiverName }: { studentId: string, r
         )}
       </div>
 
-      <form onSubmit={sendMessage} style={{ padding: '10px', borderTop: '4px solid black', display: 'flex', gap: '10px', backgroundColor: 'white' }}>
+      {/* INPUT AREA */}
+      <form onSubmit={sendMessage} style={{ 
+        padding: '15px', 
+        borderTop: '4px solid black', 
+        display: 'flex', 
+        gap: '10px', 
+        backgroundColor: 'white' 
+      }}>
         <input 
           type="text" 
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Message..."
-          style={{ flex: 1, padding: '10px', border: '3px solid black', fontWeight: 700, outline: 'none', fontSize: '0.9rem', borderRadius: '8px' }}
+          placeholder="Type a message..."
+          style={{ flex: 1, padding: '12px', border: '3px solid black', fontWeight: 700, outline: 'none', fontSize: '1rem', borderRadius: '10px' }}
         />
-        <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', padding: '10px 15px', fontSize: '0.8rem', borderRadius: '8px' }}>
-          SEND
+        <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', padding: '10px 20px', borderRadius: '10px' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="3"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         </button>
       </form>
     </div>
