@@ -41,6 +41,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       .eq('id', id);
 
     revalidatePath('/admin');
+    revalidatePath('/dashboard');
   }
 
   return (

@@ -138,7 +138,20 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
         ) : (
           messages.map((m) => {
             const isMe = m.sender_id === userId;
-            const date = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateObj = new Date(m.created_at);
+            
+            // Format Date (Today/Yesterday logic)
+            const now = new Date();
+            const isToday = dateObj.toDateString() === now.toDateString();
+            const yesterday = new Date();
+            yesterday.setDate(now.getDate() - 1);
+            const isYesterday = dateObj.toDateString() === yesterday.toDateString();
+
+            let dateLabel = dateObj.toLocaleDateString([], { day: 'numeric', month: 'short' });
+            if (isToday) dateLabel = 'Today';
+            if (isYesterday) dateLabel = 'Yesterday';
+
+            const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
             return (
               <div 
@@ -159,7 +172,7 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
                 <div style={{ 
                   backgroundColor: isMe ? 'var(--secondary)' : 'white',
                   color: isMe ? 'white' : 'black',
-                  padding: '8px 12px', /* REDUCED PADDING */
+                  padding: '8px 12px',
                   border: '3px solid black',
                   boxShadow: '3px 3px 0px black',
                   fontWeight: 600,
@@ -168,7 +181,7 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
                   {m.content}
                 </div>
                 <span style={{ fontSize: '0.55rem', fontWeight: 700, marginTop: '4px', opacity: 0.6 }}>
-                  {date}
+                  {dateLabel}, {time}
                 </span>
               </div>
             );
