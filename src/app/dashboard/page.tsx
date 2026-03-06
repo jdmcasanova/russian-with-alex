@@ -61,7 +61,7 @@ export default async function Dashboard() {
         <section style={{ padding: '0' }}>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '15px', textTransform: 'uppercase' }}>Chat with Alex</h2>
           <div style={{ maxWidth: '100%' }}>
-            <Chat userId={user.id} studentId={user.id} receiverName="Alex" />
+            <Chat studentId={user.id} receiverName="Alex" />
           </div>
         </section>
 

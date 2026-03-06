@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
-export default function Chat({ studentId, receiverName }: { userId: string, studentId: string, receiverName?: string }) {
+export default function Chat({ studentId, receiverName }: { studentId: string, receiverName?: string }) {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
