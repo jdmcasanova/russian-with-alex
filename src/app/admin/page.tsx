@@ -22,13 +22,9 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
   if (profile?.role !== 'admin') return redirect('/dashboard');
 
-  // Fetch students with their last message
   const { data: students } = await supabase
     .from('profiles')
-    .select(`
-      *,
-      messages!messages_sender_id_fkey(content, created_at)
-    `)
+    .select(`*, messages!messages_sender_id_fkey(content, created_at)`)
     .neq('role', 'admin')
     .order('first_name', { ascending: true });
 
@@ -77,21 +73,23 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
             padding: '8px 20px',
             backgroundColor: activeTab === 'overview' ? 'var(--primary)' : 'white',
             border: '3px solid black',
-            borderRadius: '12px',
             fontWeight: 900,
             fontSize: '0.9rem',
             textDecoration: 'none',
-            color: 'black'
+            color: 'black',
+            boxShadow: activeTab === 'overview' ? 'none' : '4px 4px 0px black',
+            transform: activeTab === 'overview' ? 'translate(2px, 2px)' : 'none'
           }}>STUDENTS</Link>
           <Link href="/admin?tab=chat" style={{
             padding: '8px 20px',
             backgroundColor: activeTab === 'chat' ? '#FF6B6B' : 'white',
             color: activeTab === 'chat' ? 'white' : 'black',
             border: '3px solid black',
-            borderRadius: '12px',
             fontWeight: 900,
             fontSize: '0.9rem',
-            textDecoration: 'none'
+            textDecoration: 'none',
+            boxShadow: activeTab === 'chat' ? 'none' : '4px 4px 0px black',
+            transform: activeTab === 'chat' ? 'translate(2px, 2px)' : 'none'
           }}>CHAT</Link>
         </div>
       )}
@@ -99,21 +97,37 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
       {/* 3. CONTENT AREA */}
       <div style={{ flex: 1, padding: (selectedStudentId && activeTab === 'chat') ? '0' : '0 20px 20px 20px', display: 'flex', flexDirection: 'column' }}>
         
-        {/* OVERVIEW TAB */}
+        {/* OVERVIEW TAB - RESTORED BOLD CARDS */}
         {activeTab === 'overview' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '25px' }}>
             {processedStudents?.map((s) => (
-              <div key={s.id} className="brutal-card" style={{ backgroundColor: 'white', borderRadius: '20px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <h3 style={{ fontSize: '1.1rem', textTransform: 'uppercase' }}>{s.first_name} {s.last_name}</h3>
-                <div style={{ backgroundColor: 'var(--light-yellow)', padding: '12px', borderRadius: '15px', border: '3px solid black', textAlign: 'center' }}>
-                  <p style={{ fontWeight: 900, fontSize: '0.7rem' }}>HOURS LEFT: {s.hours_remaining}</p>
+              <div key={s.id} className="brutal-card" style={{ 
+                backgroundColor: 'white', 
+                padding: '25px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '20px',
+                borderRadius: '0px' // FIXED: Perfectly square
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div>
+                    <h3 style={{ fontSize: '1.4rem', textTransform: 'uppercase' }}>{s.first_name} {s.last_name}</h3>
+                    <p style={{ fontSize: '0.8rem', fontWeight: 700, opacity: 0.6 }}>{s.email}</p>
+                  </div>
+                  <div style={{ backgroundColor: 'var(--green)', padding: '5px 10px', border: '3px solid black', fontSize: '0.7rem', fontWeight: 900 }}>ACTIVE</div>
                 </div>
+                
+                <div style={{ backgroundColor: 'var(--light-yellow)', padding: '15px', border: '3px solid black', textAlign: 'center' }}>
+                  <p style={{ fontWeight: 900, fontSize: '0.8rem', marginBottom: '5px' }}>HOURS REMAINING</p>
+                  <span style={{ fontSize: '2.5rem', fontWeight: 900 }}>{s.hours_remaining}</span>
+                </div>
+
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <Link href={`/admin?tab=chat&student=${s.id}`} className="brutal-btn" style={{ flex: 1, fontSize: '0.8rem', padding: '10px', textAlign: 'center', backgroundColor: 'var(--secondary)', color: 'white', borderRadius: '10px', textDecoration: 'none' }}>CHAT</Link>
+                  <Link href={`/admin?tab=chat&student=${s.id}`} className="brutal-btn" style={{ flex: 1, fontSize: '0.8rem', padding: '12px', textAlign: 'center', backgroundColor: 'var(--secondary)', color: 'white', textDecoration: 'none', borderRadius: '0px' }}>REPLY</Link>
                   <form action={updateHours} style={{ display: 'flex', gap: '5px' }}>
                     <input type="hidden" name="id" value={s.id} />
-                    <input type="number" name="hours" defaultValue={s.hours_remaining} style={{ width: '45px', padding: '8px', border: '3px solid black', borderRadius: '10px', fontWeight: 900 }} />
-                    <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', borderRadius: '10px', padding: '8px' }}>SET</button>
+                    <input type="number" name="hours" defaultValue={s.hours_remaining} style={{ width: '55px', padding: '10px', border: '3px solid black', fontWeight: 900, fontSize: '1rem' }} />
+                    <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', padding: '10px', borderRadius: '0px' }}>SET</button>
                   </form>
                 </div>
               </div>
@@ -123,12 +137,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
 
         {/* CHAT TAB (WhatsApp Inspired) */}
         {activeTab === 'chat' && (
-          <div style={{ display: 'flex', flex: 1, backgroundColor: 'white', border: selectedStudentId ? 'none' : '4px solid black', borderRadius: selectedStudentId ? '0' : '20px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', flex: 1, backgroundColor: 'white', border: selectedStudentId ? 'none' : '4px solid black', overflow: 'hidden' }}>
             
-            {/* STUDENT LIST (Hidden on mobile if student selected) */}
             <div style={{ 
-              width: '100%', 
-              maxWidth: selectedStudentId ? '350px' : 'none',
+              width: '100%', maxWidth: selectedStudentId ? '350px' : 'none',
               display: (selectedStudentId) ? 'none' : 'flex',
               flexDirection: 'column',
               backgroundColor: 'white',
@@ -140,48 +152,28 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
                   .chat-main { display: flex !important; }
                 }
               `}} />
-              
               <div style={{ padding: '15px 20px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)', fontWeight: 900 }}>CONVERSATIONS</div>
               <div style={{ flex: 1, overflowY: 'auto' }}>
                 {processedStudents?.map((s) => (
                   <Link key={s.id} href={`/admin?tab=chat&student=${s.id}`} style={{
-                    display: 'block',
-                    padding: '15px 20px',
-                    borderBottom: '2px solid black',
+                    display: 'block', padding: '15px 20px', borderBottom: '2px solid black',
                     backgroundColor: selectedStudentId === s.id ? 'var(--light-yellow)' : 'transparent',
-                    textDecoration: 'none',
-                    color: 'black'
+                    textDecoration: 'none', color: 'black'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                       <span style={{ fontWeight: 900 }}>{s.first_name} {s.last_name}</span>
-                      <span style={{ fontSize: '0.6rem', fontWeight: 700, opacity: 0.5 }}>
-                        {s.lastMessage ? new Date(s.lastMessage.created_at).toLocaleDateString() : ''}
-                      </span>
+                      <span style={{ fontSize: '0.6rem', fontWeight: 700, opacity: 0.5 }}>{s.lastMessage ? new Date(s.lastMessage.created_at).toLocaleDateString() : ''}</span>
                     </div>
-                    <div style={{ fontSize: '0.8rem', opacity: 0.7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 600 }}>
-                      {s.lastMessage ? s.lastMessage.content : 'No messages yet...'}
-                    </div>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.7, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 600 }}>{s.lastMessage ? s.lastMessage.content : 'No messages...'}</div>
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* CHAT WINDOW (Hidden on mobile if no student selected) */}
-            <div style={{ 
-              flex: 1, 
-              display: selectedStudentId ? 'flex' : 'none', 
-              flexDirection: 'column',
-              height: (selectedStudentId) ? 'calc(100vh - 75px)' : 'auto'
-            }} className="chat-main">
+            <div style={{ flex: 1, display: selectedStudentId ? 'flex' : 'none', flexDirection: 'column', height: (selectedStudentId) ? 'calc(100vh - 75px)' : 'auto' }} className="chat-main">
               {selectedStudent ? (
-                <Chat 
-                  studentId={selectedStudent.id} 
-                  receiverName={selectedStudent.first_name} 
-                  onBack={async () => {
-                    'use server';
-                    redirect('/admin?tab=chat');
-                  }} 
-                />
+                <Chat studentId={selectedStudent.id} receiverName={selectedStudent.first_name} 
+                  onBack={async () => { 'use server'; redirect('/admin?tab=chat'); }} />
               ) : (
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900 }}>PICK A STUDENT</div>
               )}

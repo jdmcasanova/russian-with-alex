@@ -9,7 +9,6 @@ export default function Header({ user }: { user: User | null }) {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-    // Prevent scrolling when menu is open
     if (!isOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
   };
@@ -41,11 +40,11 @@ export default function Header({ user }: { user: User | null }) {
           </span>
         </Link>
 
-        {/* DESKTOP NAV */}
+        {/* DESKTOP NAV - PERFECTLY SQUARED */}
         <div className="desktop-nav" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <Link href="/" className="nav-link">Home</Link>
-          <Link href="/about" className="nav-link">About</Link>
-          <Link href="/contact" className="nav-link">Contact</Link>
+          <Link href="/" className="nav-link-sq">Home</Link>
+          <Link href="/about" className="nav-link-sq">About</Link>
+          <Link href="/contact" className="nav-link-sq">Contact</Link>
           
           {user ? (
             <Link href="/dashboard" className="brutal-btn" style={{ 
@@ -53,7 +52,8 @@ export default function Header({ user }: { user: User | null }) {
               fontSize: '0.8rem', 
               backgroundColor: 'var(--green)', 
               color: 'black',
-              boxShadow: '4px 4px 0px black'
+              boxShadow: '4px 4px 0px black',
+              borderRadius: '0px' // FIXED: Perfectly square
             }}>
               Dashboard
             </Link>
@@ -63,7 +63,8 @@ export default function Header({ user }: { user: User | null }) {
               fontSize: '0.8rem', 
               backgroundColor: 'var(--secondary)', 
               color: 'white',
-              boxShadow: '4px 4px 0px black'
+              boxShadow: '4px 4px 0px black',
+              borderRadius: '0px' // FIXED: Perfectly square
             }}>
               Sign In
             </Link>
@@ -72,7 +73,7 @@ export default function Header({ user }: { user: User | null }) {
 
         {/* MOBILE BURGER TOGGLE */}
         <div className="mobile-nav-toggle" style={{ display: 'none', gap: '10px', alignItems: 'center' }}>
-          <button onClick={toggleMenu} style={{ background: 'var(--primary)', border: '3px solid black', padding: '10px', borderRadius: '12px', boxShadow: '4px 4px 0px black', cursor: 'pointer' }}>
+          <button onClick={toggleMenu} style={{ background: 'var(--primary)', border: '3px solid black', padding: '10px', borderRadius: '0px', boxShadow: '4px 4px 0px black', cursor: 'pointer' }}>
             {isOpen ? (
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4"><path d="M18 6L6 18M6 6l12 12"/></svg>
             ) : (
@@ -85,32 +86,20 @@ export default function Header({ user }: { user: User | null }) {
       {/* MOBILE MENU OVERLAY */}
       {isOpen && (
         <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'var(--primary)',
-          zIndex: 999,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '20px',
-          padding: '40px'
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'var(--primary)', zIndex: 999,
+          display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '20px', padding: '40px'
         }}>
           <h2 style={{ fontSize: '3rem', fontWeight: 900, marginBottom: '20px', borderBottom: '8px solid black' }}>MENU</h2>
           <Link href="/" onClick={toggleMenu} className="mobile-link">HOME</Link>
           <Link href="/about" onClick={toggleMenu} className="mobile-link">ABOUT</Link>
           <Link href="/contact" onClick={toggleMenu} className="mobile-link">CONTACT</Link>
-          
           <div style={{ width: '100%', height: '4px', backgroundColor: 'black', margin: '20px 0' }}></div>
-
           {user ? (
             <>
               <Link href="/dashboard" onClick={toggleMenu} className="mobile-link" style={{ backgroundColor: 'var(--green)' }}>DASHBOARD</Link>
               <form action="/auth/signout" method="post" style={{ width: '100%', maxWidth: '300px' }}>
-                <button type="submit" className="mobile-link" style={{ backgroundColor: 'var(--accent)', color: 'white', width: '100%', cursor: 'pointer' }}>
+                <button type="submit" className="mobile-link" style={{ backgroundColor: 'var(--accent)', color: 'white', width: '100%', cursor: 'pointer', borderRadius: '0px' }}>
                   LOGOUT
                 </button>
               </form>
@@ -122,7 +111,7 @@ export default function Header({ user }: { user: User | null }) {
       )}
 
       <style jsx>{`
-        .nav-link {
+        .nav-link-sq {
           padding: 8px 16px;
           border: 3px solid black;
           box-shadow: 3px 3px 0px black;
@@ -132,6 +121,7 @@ export default function Header({ user }: { user: User | null }) {
           font-weight: 800;
           font-size: 0.8rem;
           text-transform: uppercase;
+          border-radius: 0px; /* FIXED: Perfectly square */
         }
         .mobile-link {
           width: 100%;
@@ -146,11 +136,7 @@ export default function Header({ user }: { user: User | null }) {
           font-weight: 900;
           font-size: 1.5rem;
           text-transform: uppercase;
-          transition: transform 0.1s;
-        }
-        .mobile-link:active {
-          transform: translate(4px, 4px);
-          box-shadow: 4px 4px 0px black;
+          border-radius: 0px; /* Mobile stays bold too */
         }
         @media (max-width: 850px) {
           .desktop-nav { display: none !important; }
