@@ -26,6 +26,7 @@ export default function Contact() {
             <input type="hidden" name="_subject" value="New Russian Student Lead!" />
             <input type="hidden" name="_template" value="table" />
             <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_next" value="https://russianwithalex.com/contact/success" />
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontWeight: 900, textTransform: 'uppercase' }}>What should I call you?</label>
