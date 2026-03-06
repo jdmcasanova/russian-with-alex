@@ -27,7 +27,6 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
 
     fetchMessages();
 
-    // SUBSCRIBE TO REALTIME UPDATES
     const channel = supabase
       .channel(`chat_${studentId}`)
       .on('postgres_changes', { 
@@ -36,17 +35,12 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
         table: 'messages' 
       }, async (payload) => {
         const msg = payload.new;
-        
-        // Only add if it involves this student thread
         if (msg.sender_id === studentId || msg.receiver_id === studentId) {
-          // Avoid duplicate messages if we already added it optimistically
           setMessages((prev) => {
-            const exists = prev.some(m => m.id === msg.id);
-            if (exists) return prev;
+            if (prev.some(m => m.id === msg.id)) return prev;
             return [...prev, msg];
           });
 
-          // Fetch sender info for the bubble label
           const { data: senderInfo } = await supabase
             .from('profiles')
             .select('first_name, last_name, role')
@@ -78,18 +72,16 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
     const content = newMessage;
     setNewMessage('');
 
-    // OPTIMISTIC UPDATE: Add the message to the UI immediately
     const optimisticId = Math.random();
     const optimisticMsg = {
       id: optimisticId,
       content,
       sender_id: userId,
       created_at: new Date().toISOString(),
-      sender: { first_name: 'You', last_name: '', role: '' } // Temporary label
+      sender: { first_name: 'You', last_name: '', role: '' }
     };
     setMessages((prev) => [...prev, optimisticMsg]);
 
-    // DETERMINE RECEIVER
     let receiverId = studentId; 
     if (userId === studentId) {
       const { data: admin } = await supabase
@@ -101,7 +93,6 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
       if (admin) receiverId = admin.id;
     }
 
-    // SEND TO DB
     const { data, error } = await supabase.from('messages').insert({
       content,
       sender_id: userId,
@@ -110,17 +101,21 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
 
     if (error) {
       console.error(error);
-      // Remove optimistic message on error
       setMessages((prev) => prev.filter(m => m.id !== optimisticId));
     } else if (data) {
-      // Replace optimistic message with real DB message
       setMessages((prev) => prev.map(m => m.id === optimisticId ? data : m));
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'white', border: '4px solid black' }}>
-      <div style={{ padding: '15px 20px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)', fontWeight: 900, textTransform: 'uppercase' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '500px', /* FIXED HEIGHT */
+      backgroundColor: 'white', 
+      border: '4px solid black' 
+    }}>
+      <div style={{ padding: '10px 20px', borderBottom: '4px solid black', backgroundColor: 'var(--primary)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.9rem' }}>
         {userId === studentId ? `Chat with Alex` : `Chatting with ${receiverName}`}
       </div>
 
@@ -129,18 +124,17 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
         style={{ 
           flex: 1,
           overflowY: 'auto', 
-          padding: '20px',
+          padding: '15px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '15px',
+          gap: '8px', /* REDUCED GAP */
           backgroundColor: '#fafafa',
-          minHeight: '400px'
         }}
       >
         {loading ? (
-          <p style={{ textAlign: 'center', fontWeight: 900 }}>LOADING CONVERSATION...</p>
+          <p style={{ textAlign: 'center', fontWeight: 900, fontSize: '0.8rem' }}>LOADING...</p>
         ) : messages.length === 0 ? (
-          <p style={{ textAlign: 'center', opacity: 0.5 }}>No messages yet. Start the conversation!</p>
+          <p style={{ textAlign: 'center', opacity: 0.5, fontSize: '0.8rem' }}>No messages yet.</p>
         ) : (
           messages.map((m) => {
             const isMe = m.sender_id === userId;
@@ -151,28 +145,29 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
                 key={m.id} 
                 style={{ 
                   alignSelf: isMe ? 'flex-end' : 'flex-start',
-                  maxWidth: '80%',
+                  maxWidth: '85%',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: isMe ? 'flex-end' : 'flex-start'
                 }}
               >
                 {!isMe && (
-                  <span style={{ fontSize: '0.7rem', fontWeight: 900, marginBottom: '4px', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '0.65rem', fontWeight: 900, marginBottom: '2px', textTransform: 'uppercase' }}>
                     {m.sender?.first_name} {m.sender?.role === 'admin' ? '(Admin)' : ''}
                   </span>
                 )}
                 <div style={{ 
                   backgroundColor: isMe ? 'var(--secondary)' : 'white',
                   color: isMe ? 'white' : 'black',
-                  padding: '12px 16px',
+                  padding: '8px 12px', /* REDUCED PADDING */
                   border: '3px solid black',
-                  boxShadow: '4px 4px 0px black',
+                  boxShadow: '3px 3px 0px black',
                   fontWeight: 600,
+                  fontSize: '0.95rem'
                 }}>
                   {m.content}
                 </div>
-                <span style={{ fontSize: '0.6rem', fontWeight: 700, marginTop: '6px', opacity: 0.6 }}>
+                <span style={{ fontSize: '0.55rem', fontWeight: 700, marginTop: '4px', opacity: 0.6 }}>
                   {date}
                 </span>
               </div>
@@ -181,15 +176,15 @@ export default function Chat({ userId, studentId, receiverName }: { userId: stri
         )}
       </div>
 
-      <form onSubmit={sendMessage} style={{ padding: '20px', borderTop: '4px solid black', display: 'flex', gap: '15px', backgroundColor: 'white' }}>
+      <form onSubmit={sendMessage} style={{ padding: '15px', borderTop: '4px solid black', display: 'flex', gap: '10px', backgroundColor: 'white' }}>
         <input 
           type="text" 
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type your message..."
-          style={{ flex: 1, padding: '15px', border: '4px solid black', fontWeight: 700, outline: 'none' }}
+          placeholder="Type message..."
+          style={{ flex: 1, padding: '10px', border: '3px solid black', fontWeight: 700, outline: 'none', fontSize: '0.9rem' }}
         />
-        <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', padding: '10px 25px' }}>
+        <button type="submit" className="brutal-btn" style={{ backgroundColor: 'var(--green)', padding: '8px 20px', fontSize: '0.9rem' }}>
           SEND
         </button>
       </form>

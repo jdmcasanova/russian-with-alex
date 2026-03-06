@@ -30,41 +30,38 @@ export default async function Dashboard() {
 
   return (
     <main className={styles.container}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 20px' }}>
-        <header style={{ marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '3.5rem', textTransform: 'uppercase' }}>STUDENT PORTAL</h1>
-          <p style={{ fontSize: '1.5rem', fontWeight: 700 }}>Welcome back, {profile?.first_name}! 👋</p>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
+        <header style={{ marginBottom: '25px' }}>
+          <h1 style={{ fontSize: '2.5rem', textTransform: 'uppercase' }}>STUDENT PORTAL</h1>
+          <p style={{ fontSize: '1.1rem', fontWeight: 700 }}>Welcome back, {profile?.first_name}! 👋</p>
         </header>
 
         {/* COMPACT STATS GRID */}
         <div style={{ 
           display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-          gap: '30px',
-          maxWidth: '800px',
-          marginBottom: '60px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+          gap: '20px',
+          marginBottom: '40px'
         }}>
-          <div className="brutal-card" style={{ backgroundColor: 'var(--primary)', transform: 'rotate(-1deg)' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '10px' }}>YOUR LESSONS</h2>
-            <div style={{ fontSize: '4rem', fontWeight: 900, lineHeight: 1 }}>
+          <div className="brutal-card" style={{ backgroundColor: 'var(--primary)', transform: 'rotate(-1deg)', padding: '20px' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 900, marginBottom: '5px' }}>LESSONS LEFT</h2>
+            <div style={{ fontSize: '3rem', fontWeight: 900, lineHeight: 1 }}>
               {profile?.hours_remaining || 0}
             </div>
-            <p style={{ fontWeight: 700, marginTop: '5px' }}>Hours Remaining</p>
           </div>
 
-          <div className="brutal-card" style={{ backgroundColor: 'var(--secondary)', color: 'white', transform: 'rotate(1deg)' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 900, marginBottom: '10px' }}>NEXT STEP</h2>
-            <p style={{ marginBottom: '20px', fontWeight: 600 }}>Ready for your next breakthrough?</p>
-            <Link href="https://cal.com/alex-russian" target="_blank" className="brutal-btn" style={{ backgroundColor: 'white', display: 'inline-block', fontSize: '1rem', padding: '10px 20px' }}>
+          <div className="brutal-card" style={{ backgroundColor: 'var(--secondary)', color: 'white', transform: 'rotate(1deg)', padding: '20px' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 900, marginBottom: '5px' }}>NEXT STEP</h2>
+            <Link href="https://cal.com/alex-russian" target="_blank" className="brutal-btn" style={{ backgroundColor: 'white', display: 'inline-block', fontSize: '0.9rem', padding: '8px 15px' }}>
               BOOK A CLASS 🗓️
             </Link>
           </div>
         </div>
 
         {/* CHAT SECTION */}
-        <section>
-          <h2 style={{ fontSize: '2rem', marginBottom: '20px', textTransform: 'uppercase' }}>Direct Chat with Alex</h2>
-          <div style={{ maxWidth: '800px' }}>
+        <section style={{ padding: '0' }}>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '15px', textTransform: 'uppercase' }}>Chat with Alex</h2>
+          <div style={{ maxWidth: '100%' }}>
             <Chat userId={user.id} studentId={user.id} receiverName="Alex" />
           </div>
         </section>
